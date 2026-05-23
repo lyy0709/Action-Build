@@ -837,19 +837,19 @@ jobs:
           grep -n 'ksu_sulog_capture(KSU_SULOG_EVENT_IOCTL_GRANT_ROOT' "$EVENT_C"
 
           python3 - <<'PYFIX'
-from pathlib import Path
-path = Path("kernel_workspace/kernel_platform/KernelSU/kernel/sulog/event.c")
-text = path.read_text()
-old = "ksu_sulog_capture(KSU_SULOG_EVENT_IOCTL_GRANT_ROOT, NULL, USER_ARG_NULL, gfp)"
-new = "ksu_sulog_capture(KSU_SULOG_EVENT_IOCTL_GRANT_ROOT, NULL, &USER_ARG_NULL, gfp)"
-if new in text:
-    print("✅ SukiSU sulog 已经是 SUSFS 指针参数形式")
-elif old in text:
-    path.write_text(text.replace(old, new, 1))
-    print("✅ 已修复 SukiSU sulog USER_ARG_NULL 参数")
-else:
-    raise SystemExit("❌ 未找到预期的 USER_ARG_NULL 调用，停止构建以避免误修")
-PYFIX
+          from pathlib import Path
+          path = Path("kernel_workspace/kernel_platform/KernelSU/kernel/sulog/event.c")
+          text = path.read_text()
+          old = "ksu_sulog_capture(KSU_SULOG_EVENT_IOCTL_GRANT_ROOT, NULL, USER_ARG_NULL, gfp)"
+          new = "ksu_sulog_capture(KSU_SULOG_EVENT_IOCTL_GRANT_ROOT, NULL, &USER_ARG_NULL, gfp)"
+          if new in text:
+              print("✅ SukiSU sulog 已经是 SUSFS 指针参数形式")
+          elif old in text:
+              path.write_text(text.replace(old, new, 1))
+              print("✅ 已修复 SukiSU sulog USER_ARG_NULL 参数")
+          else:
+              raise SystemExit("❌ 未找到预期的 USER_ARG_NULL 调用，停止构建以避免误修")
+          PYFIX
 
           echo "修复后："
           grep -n 'ksu_sulog_capture(KSU_SULOG_EVENT_IOCTL_GRANT_ROOT' "$EVENT_C"
